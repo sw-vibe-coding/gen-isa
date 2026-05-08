@@ -1,0 +1,163 @@
+# COR24 ISA spec sample
+#
+# Demonstrates that the ISA TOML spec format covers an existing implementation
+# (sw-embed/sw-cor24-isa). Representative subset: one opcode of each format
+# flavour, plus a few normal ops. Full COR24 opcode set lives in
+# sw-embed/sw-cor24-isa::opcode.
+#
+# Encoding style is "rom_table": COR24's encode/decode are hand-supplied via
+# a per-opcode match-tree (see sw-cor24-isa/src/encode.rs). The generator
+# skips encode.rs and decode.rs emission for rom_table specs.
+
+[arch]
+display_name = "COR24"
+type_name = "Cor24"
+crate_slug = "cor24"
+
+[memory]
+address_unit = "Byte"
+endian = "ByteStream"
+word_bits = 24
+min_instr_bytes = 1
+max_instr_bytes = 4
+
+[branch]
+short_offset_min = -128
+short_offset_max = 127
+max_short_branch_instructions = 31
+pipeline_delay_bytes = 4              # COR24 = 3 prefetch + 1 execute
+
+[encoding]
+style = "rom_table"
+length_dispatch = "per_opcode"
+
+# ----- Registers (3-bit field, 8 entries) -----
+# Per sw-cor24-isa::register::REG_NAMES.
+
+[[register]]
+name = "r0"
+class = "gpr"
+index = 0
+
+[[register]]
+name = "r1"
+class = "gpr"
+index = 1
+
+[[register]]
+name = "r2"
+class = "gpr"
+index = 2
+
+[[register]]
+name = "fp"
+class = "fp"
+index = 3
+
+[[register]]
+name = "sp"
+class = "sp"
+index = 4
+
+[[register]]
+name = "z"
+class = "reserved"                    # hardwired conventions; not allocatable
+index = 5
+
+[[register]]
+name = "r6"
+class = "gpr"
+index = 6
+
+[[register]]
+name = "r7"
+class = "gpr"
+index = 7
+
+# ----- Formats (length-only; rom_table mode skips bit-field detail) -----
+
+[[format]]
+name = "single_byte"
+size_bytes = 1
+
+[[format]]
+name = "two_bytes"
+size_bytes = 2
+
+[[format]]
+name = "four_bytes"
+size_bytes = 4
+
+# ----- Opcodes (representative subset) -----
+# Note: AddReg and AddImm both have mnemonic "add"; the spec format permits
+# repeated mnemonics with distinct enum-variant names.
+
+[[opcode]]
+name = "AddReg"
+mnemonic = "add"
+value = 0x00
+format = "single_byte"
+role = "arith.add"
+
+[[opcode]]
+name = "AddImm"
+mnemonic = "add"
+value = 0x01
+format = "two_bytes"
+role = "arith.add"
+
+[[opcode]]
+name = "And"
+mnemonic = "and"
+value = 0x02
+format = "single_byte"
+role = "bitwise.and"
+
+[[opcode]]
+name = "Bra"
+mnemonic = "bra"
+value = 0x03
+format = "two_bytes"
+role = "branch.uncond"
+
+[[opcode]]
+name = "Brt"
+mnemonic = "brt"
+value = 0x05
+format = "two_bytes"
+role = "branch.cond"
+
+[[opcode]]
+name = "Jmp"
+mnemonic = "jmp"
+value = 0x0A
+format = "single_byte"
+role = "branch.indirect"
+
+[[opcode]]
+name = "La"
+mnemonic = "la"
+value = 0x0B
+format = "four_bytes"
+role = "mem.addr"
+
+[[opcode]]
+name = "Lw"
+mnemonic = "lw"
+value = 0x10
+format = "two_bytes"
+role = "mem.load"
+
+[[opcode]]
+name = "Sw"
+mnemonic = "sw"
+value = 0x1C
+format = "two_bytes"
+role = "mem.store"
+
+[[opcode]]
+name = "SubSp"
+mnemonic = "sub"
+value = 0x1B
+format = "four_bytes"
+role = "frame.sub_sp"

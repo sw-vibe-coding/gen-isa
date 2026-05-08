@@ -1,0 +1,218 @@
+# IBM 1130 ISA spec sample
+#
+# Demonstrates the spec format for a target ISA. Numeric opcode values
+# follow the sketches in docs/porting-guide.md Sec 3.1 and Sec 8; exact
+# values must be reconciled against IBM 1130 Functional Characteristics
+# (GA26-5881) before the generator emits a production sw-ibm1130-isa.
+# This file exists to validate the spec format covers the 1130, not to
+# be the production source-of-truth.
+#
+# Encoding style is "bit_fields": the generator emits encode.rs / decode.rs
+# from the [[format.field]] declarations. F-bit format dispatch is via
+# first_word_bits; bit 5 of the first 16-bit word selects short (F=0) or
+# long (F=1) form.
+
+[arch]
+display_name = "IBM 1130"
+type_name = "Ibm1130"
+crate_slug = "ibm1130"
+
+[memory]
+address_unit = "Word16"
+endian = "Big"
+word_bits = 16
+min_instr_bytes = 2
+max_instr_bytes = 4
+
+[branch]
+# Short-form displacement is signed 8-bit; offsets are in address units
+# (i.e. 16-bit words). 1130 PC points at the next instruction at branch
+# resolve time, so pipeline_delay_bytes = 0.
+short_offset_min = -128
+short_offset_max = 127
+max_short_branch_instructions = 64
+pipeline_delay_bytes = 0
+
+[encoding]
+style = "bit_fields"
+length_dispatch = "first_word_bits"
+
+# ----- Registers -----
+
+[[register]]
+name = "acc"
+class = "acc"
+index = 0
+
+[[register]]
+name = "ext"
+class = "ext"
+index = 1
+
+[[register]]
+name = "xr1"
+class = "xr"
+index = 2
+
+[[register]]
+name = "xr2"
+class = "xr"
+index = 3
+
+[[register]]
+name = "xr3"
+class = "fp"                          # reserved as future frame pointer
+index = 4
+
+[[register]]
+name = "iar"
+class = "pc"
+index = 5
+
+# ACC + EXT pair: required together for double-precision arithmetic
+# (M multiply, D divide, LDD load-double, STD store-double).
+[[fixed_pair]]
+hi = "acc"
+lo = "ext"
+purpose = "double-precision arithmetic (M, D, LDD, STD)"
+
+# ----- Formats -----
+# Short form: 16 bits total
+#   bits  0..4  (5): opcode
+#   bit       5 (1): F = 0 (discriminator)
+#   bits  6..7  (2): tag (XR selector)
+#   bits 8..15  (8): displacement (signed)
+#
+# Long form: 32 bits total (two big-endian words)
+#   bits  0..4  (5): opcode
+#   bit       5 (1): F = 1 (discriminator)
+#   bits  6..7  (2): tag
+#   bit       8 (1): indirect
+#   bits  9..15 (7): reserved (must be 0)
+#   bits 16..31 (16): address
+
+[[format]]
+name = "short"
+size_bytes = 2
+
+[format.discriminator]
+offset = 5
+width = 1
+value = 0
+
+[[format.field]]
+name = "op"
+kind = "opcode"
+offset = 0
+width = 5
+
+[[format.field]]
+name = "f"
+kind = "reserved"
+offset = 5
+width = 1
+value = 0
+
+[[format.field]]
+name = "tag"
+kind = "tag"
+offset = 6
+width = 2
+
+[[format.field]]
+name = "disp"
+kind = "disp"
+offset = 8
+width = 8
+signed = true
+
+[[format]]
+name = "long"
+size_bytes = 4
+
+[format.discriminator]
+offset = 5
+width = 1
+value = 1
+
+[[format.field]]
+name = "op"
+kind = "opcode"
+offset = 0
+width = 5
+
+[[format.field]]
+name = "f"
+kind = "reserved"
+offset = 5
+width = 1
+value = 1
+
+[[format.field]]
+name = "tag"
+kind = "tag"
+offset = 6
+width = 2
+
+[[format.field]]
+name = "indirect"
+kind = "indirect"
+offset = 8
+width = 1
+
+[[format.field]]
+name = "reserved"
+kind = "reserved"
+offset = 9
+width = 7
+value = 0
+
+[[format.field]]
+name = "address"
+kind = "imm"
+offset = 16
+width = 16
+
+# ----- Opcodes (illustrative subset of >=5 opcodes covering both forms) -----
+
+[[opcode]]
+name = "Load"
+mnemonic = "ld"
+value = 0x18
+formats = ["short", "long"]
+role = "mem.load"
+
+[[opcode]]
+name = "LoadDouble"
+mnemonic = "ldd"
+value = 0x19
+formats = ["long"]                    # double-precision: long form only in this sample
+role = "mem.load_double"
+
+[[opcode]]
+name = "Add"
+mnemonic = "a"
+value = 0x10
+formats = ["short", "long"]
+role = "arith.add"
+
+[[opcode]]
+name = "Store"
+mnemonic = "sto"
+value = 0x05
+formats = ["short", "long"]
+role = "mem.store"
+
+[[opcode]]
+name = "Multiply"
+mnemonic = "m"
+value = 0x14
+formats = ["short", "long"]
+role = "arith.mul.pair"               # produces 32-bit result in ACC+EXT
+
+[[opcode]]
+name = "BranchSkipCondition"
+mnemonic = "bsc"
+value = 0x09
+formats = ["short", "long"]
+role = "branch.cond"
