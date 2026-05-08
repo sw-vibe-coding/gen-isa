@@ -35,6 +35,10 @@ Before starting, gather:
   - **RISC-V I32:** *RISC-V Instruction Set Manual, Volume I: Unprivileged ISA*.
 - [ ] **Sample programs in machine code.** A handful of known-good byte sequences and their disassembly, for round-trip validation.
 - [ ] **An existing emulator** (preferably open-source) for spot-checking your decoder output. SimH covers many historical ISAs; spike covers RISC-V.
+- [ ] **Reference implementations.** For IBM 1130 specifically, three locally-cloned projects provide cross-check material for opcode tables, encoding, execution semantics, assembler grammar, and peripheral timing:
+  - [`sw-comp-history/ibm-1130-rs`](https://github.com/sw-comp-history/ibm-1130-rs) (MIT) -- Rust browser-based educational emulator with interactive assembler. CPU in `src/cpu/{instruction,executor,state,assembler}.rs`; memory and register layout in `docs/architecture.md` (4K words, XR1-3 memory-mapped at addresses 1-3, flags C/V/P/Z).
+  - [`softwarewrighter/demo-ibm-1130-system`](https://github.com/softwarewrighter/demo-ibm-1130-system) (MIT) -- Rust+WASM **peripheral** simulator (no CPU). Disk geometry/timing in `documentation/ibm_1130_disk_i_o_simulator_starter_docs.md`; device traits in `crates/core-sim/src/{disk,card,printer,mux}/`; sample disk/card fixtures in `crates/fixtures/data/`.
+  - [`softwarewrighter/S1130`](https://github.com/softwarewrighter/S1130) (license: see repo) -- C#/.NET CPU emulator with 335+ unit tests. Full opcode table in `src/S1130.SystemObjects/Instructions/OpCodes.cs` (top-5-bit dispatch, 32 opcodes including I/O and double-precision). Per-opcode execution in `Instructions/*.cs`. Two-pass assembler in `docs/Assembler.md` + `src/.../Assembler.cs` (ORG, DC, EQU, BSS, BES). Test vectors in `tests/UnitTests.S1130.SystemObjects/CpuTests.cs` -- candidate seeds for `sw-ibm1130-isa`'s `tests/roundtrip.rs`. Borrow test *vectors* freely; borrow *code* only after confirming license.
 - [ ] **Read `architecture.md` and `design.md`.** Especially design.md §1 (tenets) and §7 (per-ISA crate template).
 
 ## 2. Crate scaffolding

@@ -4,7 +4,7 @@
 
 ## Last updated
 
-2026-05-08 — initial document set drafted (architecture, prd, design, plan, porting-guide, status). Sequencing decision: **greenfield-first, retrofit COR24 last** (see `plan.md §1`). Disruption-axis scale added to `architecture.md §6.1`. No code written yet. Awaiting user review.
+2026-05-08 — initial document set drafted (architecture, prd, design, plan, porting-guide, status). Sequencing decision: **greenfield-first, retrofit COR24 last** (see `plan.md §1`). Disruption-axis scale added to `architecture.md §6.1`. Saga `foundation-and-1130-bringup` initialised; decisions doc committed (`docs/decisions.md`); IBM 1130 reference implementations linked from `porting-guide.md` Sec 1. No code written yet.
 
 ## Phase summary
 
@@ -131,6 +131,8 @@ From `design.md §11`:
 - 2026-05-08: added `porting-guide.md` (contributor-facing how-to + cherry-pick guide for COR24 patterns).
 - 2026-05-08: resequenced `plan.md` to greenfield-first; COR24 retrofit moved from phase 2 to phase 6.
 - 2026-05-08: added explicit ISA-disruption scale to `architecture.md §6.1` (replaces ambiguous "worst-case" language); updated cross-references in `plan.md`, `design.md`, `porting-guide.md`.
+- 2026-05-08: initialised agentrail saga `foundation-and-1130-bringup`; committed `docs/decisions.md` resolving plan.md D1-D6, design.md D1-D8, and saga-specific decisions.
+- 2026-05-08: linked IBM 1130 reference implementations (`sw-comp-history/ibm-1130-rs`, `softwarewrighter/demo-ibm-1130-system`, `softwarewrighter/S1130`) from `porting-guide.md` Sec 1 Prerequisites for steps 7-11 cross-checking.
 
 ## Update protocol
 
