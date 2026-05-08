@@ -1,0 +1,13 @@
+number = 2
+slug = "spec-format"
+status = "pending"
+description = """
+Step 2 of saga "foundation-and-1130-bringup".
+
+# Goal
+
+Design the TOML spec f..."""
+role = "legacy"
+context_files = []
+created_at = "2026-05-08T10:22:42"
+commits = []
