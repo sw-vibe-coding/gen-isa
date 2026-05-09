@@ -1,6 +1,6 @@
 number = 5
 slug = "scaffolder-codegen"
-status = "in-progress"
+status = "completed"
 description = """
 Step 5 of saga "foundation-and-1130-bringup".
 
@@ -10,5 +10,6 @@ Extend the scaffolder ..."""
 role = "legacy"
 context_files = []
 created_at = "2026-05-09T15:42:08"
+completed_at = "2026-05-09T16:09:18"
 task_type = "scaffolder-codegen"
-commits = []
+commits = ["7b77b5a4238ac8bab21c4c87fa34d00869d4556b"]

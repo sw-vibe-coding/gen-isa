@@ -1,0 +1,11 @@
+{
+  "task_type": "scaffolder-codegen",
+  "state": {
+    "number": 5,
+    "step": "scaffolder-codegen"
+  },
+  "action": "Authored src/spec.rs (Spec / Arch / Memory / Branch / Encoding / Register / Format / Opcode structs with serde Deserialize; validation in Spec::parse covering all rules from spec-format.md). Authored src/emit.rs with seven generators: opcode_rs / register_rs / branch_rs / encode_rs / decode_rs / lib_rs / roundtrip_test. Wired --spec into ScaffoldRequest (Option<Spec>) and the CLI. apply_spec_overrides in scaffold.rs replaces the relevant template files when a spec is present. Two clippy issues caught and fixed mid-stream: unused imports + push_str(\"\\n\"). Verified end-to-end against both example specs.",
+  "result": "success",
+  "reward": 1,
+  "timestamp": "2026-05-09T16:09:18"
+}
