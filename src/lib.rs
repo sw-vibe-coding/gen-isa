@@ -8,10 +8,13 @@
 //! (`scaffolder-codegen`) adds spec-driven emission for the mechanical
 //! bits (opcode tables, register tables, encode/decode bit-field math).
 
+pub mod emit;
 pub mod fs;
 pub mod scaffold;
+pub mod spec;
 pub mod templates;
 
 pub use fs::{Filesystem, InMemoryFs, RealFs};
 pub use scaffold::{ScaffoldError, ScaffoldRequest, scaffold};
+pub use spec::{Spec, SpecError};
 pub use templates::{Context, CrateRole, crate_name};

@@ -12,6 +12,7 @@ fn req(slug: &str) -> ScaffoldRequest {
         out_dir: PathBuf::from("/out"),
         framework_path: "../../sw-langtools".to_string(),
         force: false,
+        spec: None,
     }
 }
 
@@ -95,6 +96,7 @@ fn scaffold_rejects_invalid_slug() {
             out_dir: PathBuf::from("/out"),
             framework_path: "../sw-langtools".into(),
             force: false,
+            spec: None,
         };
         assert!(
             scaffold(&r, &mut fs).is_err(),
@@ -120,11 +122,97 @@ fn scaffold_force_overwrites() {
     let mut fs = InMemoryFs::new();
     fs.create_dir_all_for_test("/out");
     scaffold(&req("ibm1130"), &mut fs).unwrap();
-    let r = ScaffoldRequest {
-        force: true,
-        ..req("ibm1130")
-    };
+    let mut r = req("ibm1130");
+    r.force = true;
     scaffold(&r, &mut fs).expect("force should succeed");
+}
+
+#[test]
+fn scaffold_with_spec_overrides_isa_modules() {
+    use gen_isa::Spec;
+    let spec_text =
+        std::fs::read_to_string("docs/spec-examples/ibm1130.toml").expect("ibm1130 spec example");
+    let spec = Spec::parse(&spec_text).expect("parse ibm1130");
+    let mut fs = InMemoryFs::new();
+    fs.create_dir_all_for_test("/out");
+    let mut r = req("ibm1130");
+    r.spec = Some(spec);
+    scaffold(&r, &mut fs).unwrap();
+
+    // Generated opcode.rs has spec-driven content (not the empty stub).
+    let opcode = fs
+        .read(Path::new("/out/sw-ibm1130-isa/src/opcode.rs"))
+        .unwrap();
+    assert!(
+        opcode.contains("pub enum Opcode"),
+        "opcode.rs missing enum: {opcode}"
+    );
+    assert!(opcode.contains("Load"));
+    assert!(opcode.contains("Add"));
+
+    // lib.rs has Architecture impl
+    let lib = fs
+        .read(Path::new("/out/sw-ibm1130-isa/src/lib.rs"))
+        .unwrap();
+    assert!(lib.contains("impl sw_isa_core::Architecture for TestIsa"));
+    assert!(lib.contains("pub enum Instruction"));
+
+    // roundtrip test exists for spec mode
+    let rt = fs
+        .read(Path::new("/out/sw-ibm1130-isa/tests/roundtrip.rs"))
+        .unwrap();
+    assert!(rt.contains("roundtrip_short") || rt.contains("roundtrip_long"));
+}
+
+#[test]
+fn spec_parse_validates_examples() {
+    use gen_isa::Spec;
+    for path in [
+        "docs/spec-examples/cor24.toml",
+        "docs/spec-examples/ibm1130.toml",
+    ] {
+        let text = std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{path}: {e}"));
+        Spec::parse(&text).unwrap_or_else(|e| panic!("{path}: {e}"));
+    }
+}
+
+#[test]
+fn spec_validation_rejects_dangling_format() {
+    use gen_isa::Spec;
+    let text = r#"
+[arch]
+display_name = "X"
+type_name = "X"
+crate_slug = "x"
+
+[memory]
+address_unit = "Byte"
+endian = "Big"
+word_bits = 8
+min_instr_bytes = 1
+max_instr_bytes = 1
+
+[branch]
+short_offset_min = -128
+short_offset_max = 127
+max_short_branch_instructions = 31
+pipeline_delay_bytes = 0
+
+[encoding]
+style = "rom_table"
+length_dispatch = "per_opcode"
+
+[[format]]
+name = "f1"
+size_bytes = 1
+
+[[opcode]]
+name = "Bad"
+mnemonic = "bad"
+value = 0
+format = "does_not_exist"
+"#;
+    assert!(Spec::parse(text).is_err());
 }
 
 #[test]

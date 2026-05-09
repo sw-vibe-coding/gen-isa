@@ -1,6 +1,6 @@
 number = 5
 slug = "scaffolder-codegen"
-status = "pending"
+status = "in-progress"
 description = """
 Step 5 of saga "foundation-and-1130-bringup".
 

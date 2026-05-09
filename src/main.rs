@@ -3,7 +3,7 @@
 //! See `gen-isa --help` for usage.
 
 use clap::{Parser, Subcommand};
-use gen_isa::{RealFs, ScaffoldRequest, scaffold, scaffold::dry_run_paths};
+use gen_isa::{RealFs, ScaffoldRequest, Spec, scaffold, scaffold::dry_run_paths};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -37,6 +37,11 @@ enum Command {
         /// Path prefix for sw-langtools framework deps.
         #[arg(long, default_value = "../../sw-langtools")]
         framework_path: String,
+        /// Optional ISA spec TOML; when provided, the -isa crate's
+        /// mechanical modules (opcode/register/encode/decode/branch/lib/
+        /// tests/roundtrip) are emitted from the spec.
+        #[arg(long)]
+        spec: Option<PathBuf>,
         /// Print files that would be written; do not touch disk.
         #[arg(long)]
         dry_run: bool,
@@ -55,9 +60,20 @@ fn main() -> ExitCode {
             type_name,
             out,
             framework_path,
+            spec,
             dry_run,
             force,
         } => {
+            let parsed_spec = match spec {
+                Some(p) => match Spec::parse_file(&p) {
+                    Ok(s) => Some(s),
+                    Err(e) => {
+                        eprintln!("error parsing spec {}: {e}", p.display());
+                        return ExitCode::FAILURE;
+                    }
+                },
+                None => None,
+            };
             let req = ScaffoldRequest {
                 slug,
                 display_name,
@@ -65,6 +81,7 @@ fn main() -> ExitCode {
                 out_dir: out,
                 framework_path,
                 force,
+                spec: parsed_spec,
             };
             if dry_run {
                 match dry_run_paths(&req) {
