@@ -13,7 +13,7 @@ Phases per `plan.md` (resequenced 2026-05-08).
 | Phase | Description                                              | State          |
 | ----- | -------------------------------------------------------- | -------------- |
 | 0     | Discovery: audit existing compilers' backend shape       | not started    |
-| 1     | Layered scaffolding (minimal, co-developed with phase 2) | not started    |
+| 1     | Layered scaffolding (minimal, co-developed with phase 2) | **skeletons up** (saga step 3 of 13 complete; trait surfaces will iterate during 1130 bring-up) |
 | 2     | First new ISA (IBM 1130 recommended)                     | not started    |
 | 3     | Pilot frontend refactor (BASIC suggested) on phase-2 ISA | not started    |
 | 4     | Second new ISA (CDP1802 or RISC-V I32)                   | not started    |
@@ -28,11 +28,11 @@ Phases per `plan.md` (resequenced 2026-05-08).
 
 | Crate              | Exists | Trait surface | Tests | Notes                                  |
 | ------------------ | ------ | ------------- | ----- | -------------------------------------- |
-| `sw-isa-core`      | no     | designed      | none  | design.md §2                           |
-| `sw-target-core`   | no     | designed      | none  | design.md §3                           |
-| `sw-tir`           | no     | designed      | none  | design.md §4                           |
-| `sw-tir-opt`       | no     | sketch        | none  | design.md §5                           |
-| `sw-codegen-core`  | no     | designed      | none  | design.md §6                           |
+| `sw-isa-core`      | **yes** | skeleton (built) | smoke | design.md §2; sw-langtools repo. ByteStream dropped from Endian (orthogonal to byte order). |
+| `sw-target-core`   | **yes** | skeleton (built) | smoke | design.md §3; sw-langtools repo.       |
+| `sw-tir`           | **yes** | skeleton (built) | smoke | design.md §4; sw-langtools repo.       |
+| `sw-tir-opt`       | **yes** | skeleton (built) | smoke | design.md §5; sw-langtools repo. PassDriver + 3 stub passes. |
+| `sw-codegen-core`  | **yes** | skeleton (built) | smoke | design.md §6; sw-langtools repo. Sub-modules (regalloc/branch/frame/asm) are stubs. |
 
 ### Per-ISA crates
 
@@ -133,6 +133,9 @@ From `design.md §11`:
 - 2026-05-08: added explicit ISA-disruption scale to `architecture.md §6.1` (replaces ambiguous "worst-case" language); updated cross-references in `plan.md`, `design.md`, `porting-guide.md`.
 - 2026-05-08: initialised agentrail saga `foundation-and-1130-bringup`; committed `docs/decisions.md` resolving plan.md D1-D6, design.md D1-D8, and saga-specific decisions.
 - 2026-05-08: linked IBM 1130 reference implementations (`sw-comp-history/ibm-1130-rs`, `softwarewrighter/demo-ibm-1130-system`, `softwarewrighter/S1130`) from `porting-guide.md` Sec 1 Prerequisites for steps 7-11 cross-checking.
+- 2026-05-08: completed step `spec-format`. `docs/spec-format.md` + `docs/spec-examples/{cor24,ibm1130}.toml` define the ISA TOML spec format and provide worked samples.
+- 2026-05-08: completed step `framework-skeletons`. Five sibling crates pushed to `sw-langtools` org: `sw-isa-core`, `sw-target-core`, `sw-tir`, `sw-tir-opt`, `sw-codegen-core`. Each compiles, tests, clippy-clean, fmt-clean. Cross-deps via `path = "../<crate>"` assuming sibling clones at `~/github/sw-langtools/`.
+- 2026-05-08: trait-surface refinement during step 3 -- `Endian::ByteStream` dropped (was conflating instruction-encoding layout with byte order). `Endian` is now `Big | Little`; ISAs without multi-byte instruction fields (COR24) document the const as data-side endianness. Updated `docs/spec-format.md` and `docs/spec-examples/cor24.toml` accordingly.
 
 ## Update protocol
 

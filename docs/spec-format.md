@@ -65,7 +65,7 @@ Identity. All fields required.
 | Field | Type | Meaning |
 |---|---|---|
 | `address_unit` | enum | One of `"Byte"`, `"Word16"`, `"Word24"`, `"Word32"`. Drives `AddressUnit`. |
-| `endian` | enum | One of `"Big"`, `"Little"`, `"ByteStream"`. Drives `Endian`. |
+| `endian` | enum | `"Big"` or `"Little"`. Drives `Endian`. ISAs with positional byte-stream instruction encoding (e.g. COR24, no multi-byte instruction fields) set this to whatever the data-side memory loads/stores use; instruction decoding ignores it. |
 | `word_bits` | integer | Native word width in bits. |
 | `min_instr_bytes` | integer | Smallest legal instruction in bytes. |
 | `max_instr_bytes` | integer | Largest legal instruction in bytes. |

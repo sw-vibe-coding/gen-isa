@@ -16,7 +16,11 @@ crate_slug = "cor24"
 
 [memory]
 address_unit = "Byte"
-endian = "ByteStream"
+# COR24 instructions are a positional byte stream with no multi-byte
+# instruction fields, so endian does not affect instruction decoding.
+# Set to the data-side endianness used for memory loads/stores wider
+# than a byte. (Big chosen arbitrarily; revisit per the COR24 emulator.)
+endian = "Big"
 word_bits = 24
 min_instr_bytes = 1
 max_instr_bytes = 4
