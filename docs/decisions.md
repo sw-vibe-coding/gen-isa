@@ -302,3 +302,117 @@ publication.
 
 **Revisit if.** Bring-up reveals an exit criterion is unmeetable as
 stated, or a deferred item turns out to be an actual blocker.
+
+---
+
+## 16. HLASM-grade ambition for `sw-ibm1130-asm`
+
+**Question.** What grade of assembler do we ship for IBM 1130?
+
+**Options considered.**
+- A. Basic line assembler (mnemonic + operands, no symbols).
+- B. HLASM-grade with macros, conditional assembly, full directive set.
+- C. **Simple HLASM subset first; grow as justified**.
+
+**Choice.** C. Initial scope: labels, `ORG`, `EQU`, `DC`, `DS`/`BSS`/`BES`,
+expressions (with `*` current-address), forward references via two-pass.
+Macros, conditional assembly (`AIF`/`AGO`), and `SETA`/`SETB` are deferred
+until a real consumer needs them.
+
+**Rationale.** Full HLASM is a multi-month effort for a single-ISA
+assembler; we don't have a consumer yet that justifies it. Simple subset
+covers everything the IBM 1130 emulator's curated test programs need
+plus the foreseeable codegen output. Add features when they pay for
+themselves. `softwarewrighter/S1130/docs/Assembler.md` is the design
+reference (read-only -- do not borrow code per memory rule).
+
+**Revisit if.** A frontend or test program needs macros / conditional
+assembly to express something in a non-painful way.
+
+---
+
+## 17. HLASM-in-HLASM bootstrap is a parallel future saga
+
+**Status.** Recorded for direction; not in this saga's scope.
+
+**Decision.** Once `sw-ibm1130-asm` (Rust) and `sw-ibm1130-emulator` ship
+end-to-end, a separate saga authors HLASM source for the same simple
+subset, assembles it via the Rust HLASM, runs it on the emulator, and
+verifies parity. Provides a self-hosted reference and a forcing function
+for HLASM correctness.
+
+**Rationale.** Self-hosting is a valuable correctness property and a
+classic compiler-bootstrap pattern. But it requires the Rust HLASM to be
+working first; doing both in parallel inside one saga creates dependency
+cycles and slows both. Sequencing them keeps each saga simple.
+
+**Revisit if.** A use case forces the order to change.
+
+---
+
+## 18. FPGA execution augments the emulator (not replaces it)
+
+**Status.** Recorded for direction; not in this saga's scope.
+
+**Decision.** A future `sw-ibm1130-fpga` (or similarly named) crate may
+provide FPGA-board-backed execution alongside `sw-ibm1130-emulator`. Both
+share `sw-ibm1130-isa` (decode / encode / disassemble) and
+`sw-ibm1130-target` (ABI). The `Backend` from `sw-codegen-core` does not
+care which executor consumes its output. The emulator stays as a
+software-only execution path forever; FPGA is an alternative path,
+chosen at run-time or by build-time feature flag.
+
+**Rationale.** Two backends keep us honest -- if FPGA execution diverges
+from emulator, that's a bug we want to catch. Sharing `-isa` and
+`-target` means FPGA support doesn't fork the toolchain.
+
+**Revisit if.** FPGA execution exposes ISA-level constraints (e.g.
+timing-sensitive operations) that don't fit the existing trait surface.
+
+---
+
+## 19. IBM 1130 encoding: real per Functional Characteristics, not toy
+
+**Question.** Adopt the simplified 16-bit encoding from
+`sw-comp-history/ibm-1130-rs` (bits 15-12 opcode, 11-8 modifier, 7-0
+address) or implement the real 1130 Short / Long form encoding?
+
+**Choice.** **Real encoding** per *IBM 1130 Functional Characteristics*
+(GA26-5881). Short form: 16-bit, F-bit dispatch, 8-bit displacement.
+Long form: 32-bit, indirect bit, 16-bit address. F bit at bit 5
+discriminates.
+
+**Rationale.** Project goals are historic-faithful reimplementations.
+Toy encoding diverges from real 1130 binaries and breaks any future
+integration with original software (DMS subroutines, sample programs,
+disk images from `softwarewrighter/demo-ibm-1130-system`). Cost is
+~1 week of careful encode/decode + reference vectors; payoff is
+authenticity and emulator-level interoperability with reference
+material.
+
+**Revisit if.** Functional Characteristics turns out to require something
+we cannot express in our `Architecture::Instruction` shape.
+
+---
+
+## 20. Do not borrow code from `softwarewrighter/S1130`
+
+**Status.** Already enforced via session memory; documented here for
+future readers.
+
+**Decision.** `softwarewrighter/S1130` has no top-level LICENSE file
+(it is a fork the user does not control). Use it as a **read-only
+reference** for opcode tables, instruction semantics, assembler
+directive coverage, and structural sanity checks. Do **not** copy
+or port code from it. Numeric test vectors derived from the IBM 1130
+*Functional Characteristics* manual are fine to re-derive (they
+authoritatively belong to the manual, not S1130) -- but do not lift
+S1130's test files directly.
+
+For actual code reuse, use the two MIT-licensed user-controlled
+projects: `sw-comp-history/ibm-1130-rs` (CPU + simple assembler,
+~70-80% reusable) and `softwarewrighter/demo-ibm-1130-system`
+(peripheral simulation, when needed).
+
+**Revisit if.** S1130 gains a clear LICENSE that the user
+controls / accepts.
