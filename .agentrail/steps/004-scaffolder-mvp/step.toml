@@ -1,6 +1,6 @@
 number = 4
 slug = "scaffolder-mvp"
-status = "pending"
+status = "in-progress"
 description = """
 Step 4 of saga "foundation-and-1130-bringup".
 

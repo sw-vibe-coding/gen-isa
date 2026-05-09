@@ -136,6 +136,8 @@ From `design.md §11`:
 - 2026-05-08: completed step `spec-format`. `docs/spec-format.md` + `docs/spec-examples/{cor24,ibm1130}.toml` define the ISA TOML spec format and provide worked samples.
 - 2026-05-08: completed step `framework-skeletons`. Five sibling crates pushed to `sw-langtools` org: `sw-isa-core`, `sw-target-core`, `sw-tir`, `sw-tir-opt`, `sw-codegen-core`. Each compiles, tests, clippy-clean, fmt-clean. Cross-deps via `path = "../<crate>"` assuming sibling clones at `~/github/sw-langtools/`.
 - 2026-05-08: trait-surface refinement during step 3 -- `Endian::ByteStream` dropped (was conflating instruction-encoding layout with byte order). `Endian` is now `Big | Little`; ISAs without multi-byte instruction fields (COR24) document the const as data-side endianness. Updated `docs/spec-format.md` and `docs/spec-examples/cor24.toml` accordingly.
+- 2026-05-08: locked 5 saga-direction decisions (`docs/decisions.md` Sec 16-20): HLASM-grade asm with simple-subset-first, HLASM-in-HLASM bootstrap as parallel future saga, FPGA augments emulator (shares -isa/-target), real IBM 1130 encoding (not the toy from ibm-1130-rs), no code borrowing from S1130.
+- 2026-05-09: completed step `scaffolder-mvp`. Rust binary `gen-isa` in this repo emits the 5-crate skeleton quintet (Cargo.toml / LICENSE / COPYRIGHT / README.md / .gitignore / src/lib.rs / per-role module stubs / tests/smoke.rs / -target's docs/abi.md). Filesystem trait + InMemoryFs for testing. 8 integration tests, clippy-D-warnings clean, fmt clean. Acceptance: scaffolded into a tempdir with `--framework-path $HOME/github/sw-langtools`; all 5 generated crates compile cleanly.
 
 ## Update protocol
 

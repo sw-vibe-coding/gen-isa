@@ -1,0 +1,20 @@
+[package]
+name = "gen-isa"
+version = "0.1.0"
+edition = "2024"
+description = "ISA-specific Rust crate scaffolder for the multi-ISA toolchain (sw-langtools / sw-comp-history / sw-embed)"
+license = "MIT"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "gen-isa"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+thiserror = "2"
+
+[dev-dependencies]
+tempfile = "3"
