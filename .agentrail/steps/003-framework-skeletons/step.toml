@@ -1,6 +1,6 @@
 number = 3
 slug = "framework-skeletons"
-status = "pending"
+status = "completed"
 description = """
 Step 3 of saga "foundation-and-1130-bringup".
 
@@ -10,4 +10,5 @@ Create the five framew..."""
 role = "legacy"
 context_files = []
 created_at = "2026-05-08T11:14:19"
-commits = []
+completed_at = "2026-05-09T08:03:17"
+commits = ["3c9c2c57eff854784d88f4d83d7c2dc201de1c8a"]
