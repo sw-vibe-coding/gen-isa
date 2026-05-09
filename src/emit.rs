@@ -179,8 +179,7 @@ pub fn branch_rs(spec: &Spec) -> String {
          pub const PIPELINE_DELAY_BYTES: u32 = {};\n\
          \n\
          pub fn can_short_branch(from: usize, to: usize) -> bool {{\n\
-         \x20   let diff = to as isize - from as isize;\n\
-         \x20   diff >= BRANCH_OFFSET_MIN as isize && diff <= BRANCH_OFFSET_MAX as isize\n\
+         \x20   from.abs_diff(to) <= MAX_SHORT_BRANCH_INSTRUCTIONS\n\
          }}\n",
         spec.branch.short_offset_min,
         spec.branch.short_offset_max,
