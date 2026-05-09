@@ -1,6 +1,6 @@
 number = 4
 slug = "scaffolder-mvp"
-status = "in-progress"
+status = "completed"
 description = """
 Step 4 of saga "foundation-and-1130-bringup".
 
@@ -10,5 +10,6 @@ Build a Rust binary in..."""
 role = "legacy"
 context_files = []
 created_at = "2026-05-09T08:03:17"
+completed_at = "2026-05-09T15:42:08"
 task_type = "scaffolder"
-commits = []
+commits = ["506be28e8ecdc92cd83f6e7983a081e90e33dacb"]
