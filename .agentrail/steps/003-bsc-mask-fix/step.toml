@@ -1,0 +1,8 @@
+number = 3
+slug = "bsc-mask-fix"
+status = "pending"
+description = "Step 3 of saga 'forth-on-1130' -- close the BSC long-form condition-mask gap...."
+role = "legacy"
+context_files = []
+created_at = "2026-05-10T13:38:50"
+commits = []
