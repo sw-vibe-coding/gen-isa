@@ -1,6 +1,6 @@
 number = 9
 slug = "ibm1130-codegen"
-status = "pending"
+status = "in-progress"
 description = """
 Step 9 of saga "foundation-and-1130-bringup".
 
