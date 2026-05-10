@@ -1,0 +1,11 @@
+{
+  "task_type": "scaffolder-validation",
+  "state": {
+    "number": 6,
+    "step": "scaffolder-validation"
+  },
+  "action": "Read existing sw-embed/sw-cor24-isa modules (lib/opcode/register/branch; skipped encode.rs as 409-line rom_table). Generated sw-cor24-isa from cor24.toml into tempdir; ran cargo build+test (passes; rom_table roundtrip ignored). Diffed each generated module against existing. Identified one real bug (can_short_branch directional vs symmetric) and fixed in src/emit.rs. Authored docs/cor24-validation.md with explicit verdicts and follow-up classifications. No spec format extensions needed for this saga; deferred extensions documented for future sagas.",
+  "result": "success",
+  "reward": 1,
+  "timestamp": "2026-05-09T16:25:03"
+}
