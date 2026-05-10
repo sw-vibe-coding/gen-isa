@@ -1,0 +1,13 @@
+number = 13
+slug = "status-update"
+status = "pending"
+description = """
+Step 13 of saga 'foundation-and-1130-bringup' -- final saga step.
+
+# Goal
+
+Br..."""
+role = "legacy"
+context_files = []
+created_at = "2026-05-10T12:25:08"
+commits = []

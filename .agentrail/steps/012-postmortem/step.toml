@@ -1,6 +1,6 @@
 number = 12
 slug = "postmortem"
-status = "in-progress"
+status = "completed"
 description = """
 Step 12 of saga "foundation-and-1130-bringup".
 
@@ -10,4 +10,5 @@ Write gen-isa/docs/po..."""
 role = "legacy"
 context_files = []
 created_at = "2026-05-10T11:30:38"
-commits = []
+completed_at = "2026-05-10T12:25:08"
+commits = ["ebae20f9c9227a55c530fc19f3264c8d745f2664"]
