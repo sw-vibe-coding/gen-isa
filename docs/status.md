@@ -4,7 +4,7 @@
 
 ## Last updated
 
-2026-05-08 — initial document set drafted (architecture, prd, design, plan, porting-guide, status). Sequencing decision: **greenfield-first, retrofit COR24 last** (see `plan.md §1`). Disruption-axis scale added to `architecture.md §6.1`. Saga `foundation-and-1130-bringup` initialised; decisions doc committed (`docs/decisions.md`); IBM 1130 reference implementations linked from `porting-guide.md` Sec 1. No code written yet.
+2026-05-09 — saga step 8 (`ibm1130-target`) complete. `sw-ibm1130-target` pushed to `sw-comp-history`; ABI invented and documented; `Target`, `CallingConvention`, `RegisterClasses` impls live with 13 smoke tests. See "Recent changes" for prior milestones.
 
 ## Phase summary
 
@@ -39,7 +39,7 @@ Phases per `plan.md` (resequenced 2026-05-08).
 | ISA       | `-isa`                | `-target` | `-codegen` | `-asm`            | `-emulator`      |
 | --------- | --------------------- | --------- | ---------- | ----------------- | ---------------- |
 | COR24     | **exists** (this repo, not yet `Architecture`-impl'd) | no | no | exists (separate) | exists (separate) |
-| IBM 1130  | **exists** (`sw-comp-history/sw-ibm1130-isa`, 24 opcodes, 12 tests passing) | no | no | no | no |
+| IBM 1130  | **exists** (`sw-comp-history/sw-ibm1130-isa`, 24 opcodes, 12 tests passing) | **exists** (`sw-comp-history/sw-ibm1130-target`, invented ABI, 13 tests) | no | no | no |
 | CDP1802   | no                    | no        | no         | no                | no               |
 | RISC-V I32| no                    | no        | no         | no                | no               |
 | S/370     | no                    | no        | no         | no                | no               |
@@ -141,6 +141,7 @@ From `design.md §11`:
 - 2026-05-09: completed step `scaffolder-codegen`. The scaffolder now parses an ISA TOML spec via `--spec <PATH>` and emits real Rust code for the `-isa` crate's mechanical bits: `opcode.rs` (enum + mnemonic + formats + try_from_value + Mnemonic impl), `register.rs` (enum + name + class + RegisterId impl + parse_register), `branch.rs` (constants + can_short_branch), `encode.rs` and `decode.rs` (working bit-field math for `bit_fields` style; stubs for `rom_table`), `lib.rs` (Architecture impl + Address newtype + Instruction enum), `tests/roundtrip.rs` (curated round-trip per format). 11 integration tests; clippy-D-warnings clean; fmt clean. Acceptance: scaffolded `sw-testibm-isa` from `ibm1130.toml` -- builds + 2 roundtrip tests pass; scaffolded `sw-testcor-isa` from `cor24.toml` (rom_table) -- builds + 1 ignored roundtrip + smoke passes.
 - 2026-05-09: completed step `scaffolder-validation`. Cross-checked the smart scaffolder against the existing `sw-embed/sw-cor24-isa`. Per-module verdicts in `docs/cor24-validation.md`: opcode (Match), register (Match semantic; design choice deferred), branch (Match after abs_diff fix), lib (forward-looking; pre-retrofit divergence expected), encode/decode (rom_table opt-out works as designed). Bottom line: scaffolder is faithful enough to proceed to step 7. Generator improvement: `branch_rs()` now emits `abs_diff`-based `can_short_branch` matching the existing crate's symmetric semantics.
 - 2026-05-09: completed step `ibm1130-isa`. **First real per-ISA crate live**: [`sw-comp-history/sw-ibm1130-isa`](https://github.com/sw-comp-history/sw-ibm1130-isa). Extended `docs/spec-examples/ibm1130.toml` from the 6-opcode sample to the full 24-opcode authoritative table (cross-checked against IBM 1130 Functional Characteristics via S1130's transcribed values). Generated via `gen-isa scaffold --spec`; hand-added `src/addr_mode.rs` (AddressingMode) and `src/branch_cond.rs` (BranchCondition) ported from `sw-comp-history/ibm-1130-rs` (MIT). 12 tests pass: 5 unit tests, 4 reference-vector + exhaustive (23552 short-form cases + 320 sampled long-form), 2 generated curated roundtrips, 1 smoke. cargo build/test/clippy -D warnings/fmt --check all clean. Generator improvements during step: shift-by-0 elision in encode/decode emit; reserved-fields-with-value-0 skip; reserved-fields-with-nonzero-value skip mask; emit `#![allow(unused_parens, clippy::all)]` in generated encode.rs/decode.rs (generated bit-fiddling code resists hand-quality lint passes).
+- 2026-05-09: completed step `ibm1130-target`. [`sw-comp-history/sw-ibm1130-target`](https://github.com/sw-comp-history/sw-ibm1130-target). Scaffolded via `gen-isa scaffold --spec` (target subdir only). Hand-authored ABI documented in `docs/abi.md` (11 sections); the 1130 has no native calling convention, so the ABI is invented for this toolchain. Decisions: ACC = first scalar arg + scalar return; ACC+EXT pair for 32-bit return; XR1 caller-saved scratch; XR2 = logical SP (callee-saved); XR3 = FP (callee-saved); stack grows down; word alignment everywhere; ptr = 1 word = 16 bits; types I8/U8/Bool/I16/U16/Ptr = 1 word, I32/U32 = 2 words, I64/U64 = 4 words. `Target`, `CallingConvention`, `RegisterClasses` all implemented with 13 smoke tests covering register partitioning, type widths, and saved-set disjointness. cargo build/test/clippy -D warnings/fmt --check all clean.
 
 ## Update protocol
 
