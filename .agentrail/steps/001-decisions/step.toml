@@ -1,6 +1,6 @@
 number = 1
 slug = "decisions"
-status = "in-progress"
+status = "completed"
 description = """
 Step 1 of saga 'forth-on-1130' -- decisions (docs only).
 
@@ -10,4 +10,5 @@ Lock the op..."""
 role = "legacy"
 context_files = []
 created_at = "2026-05-10T13:03:30"
-commits = []
+completed_at = "2026-05-10T13:14:25"
+commits = ["f1406cb8771d306faec115a4e961dc0309ab3bf0"]

@@ -1,0 +1,8 @@
+number = 2
+slug = "reference-cloning"
+status = "pending"
+description = "Step 2 of saga 'forth-on-1130' -- read Moore's source and produce a side-by-s..."
+role = "legacy"
+context_files = []
+created_at = "2026-05-10T13:14:25"
+commits = []
