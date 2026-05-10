@@ -132,8 +132,12 @@ From `design.md §11`:
 
 ## Open decisions for the next saga
 
-- **D3 (still open).** Pilot frontend selection. Default suggestion is
-  BASIC; depends on phase 3 saga.
+- **D3 (resolved 2026-05-10, post-saga).** Pilot frontend = **FORTH**
+  on the 1130, not BASIC. FORTH was first implemented on a 1130 in
+  1968 (Charles H. Moore); Moore's source is preserved at
+  [`monsonite/1968-FORTH`](https://github.com/monsonite/1968-FORTH);
+  local DTC reference at `~/github/sw-embed/sw-cor24-forth`. Detailed
+  design in `docs/forth-on-1130-plan.md`. BASIC retained as fallback.
 - **D6 (still open).** Phase-4 ISA: CDP1802 or RISC-V I32 first?
   Recommendation in `decisions.md`: CDP1802 (highest framework-stress
   per cost). User may prefer RISC-V for cycle speed and simpler tests.
@@ -166,6 +170,7 @@ From `design.md §11`:
 - 2026-05-10: post-step-11 polish (off-saga, on the emulator repo). Added `tests/programs/hello.asm` -- a real hello-world that XIOs each ASCII byte to the 1054/console Selectric area and a captured `console_output` buffer. Extended emulator's `XIO` from no-op to a minimal IOCC-aware handler (area=1 CONSOLE, function=0 WRITE supported; everything else still no-op). Promoted demo programs to per-example runners (`cargo run --example {hello-world,math,conditions,loops,strings}`) with shared scaffolding in `examples/_common.rs`. Each runner prints source, hex dump, post-run memory, and per-demo result. Math demo updated `STO` -> `STD` so the multiply pair actually lands in memory (RESULT, RESULT+1) rather than just storing the high half.
 - 2026-05-10: completed step `postmortem`. New `docs/postmortem-1130-bringup.md` captures the saga's lessons: trait-surfaces in `sw-langtools` did not change during 1130 bring-up but that's deceptive (limited disruption profile, several punted features); the step-8 invented ABI was wrong on XR3 (reserved as LIBF base, not a frame pointer) -- lesson: cross-check against historical listings before pouring downstream layers; the BSC long-form mask field is in the spec's reserved area and needs a re-spec for ISA-side fidelity; codegen ships with a slot-based register-allocator-free model that's a debt the next saga must clear; asm syntax pinned colon-suffixed labels and lookahead-based I/L flag parsing; emulator scope is deliberately narrow (no real device subsystem, no interrupts, no timing). Includes 8 concrete lessons for ISA #2 and a future-work catalogue.
 - 2026-05-10: completed step `status-update` (final saga step). Phase summary marked phase 1 + phase 2 complete; per-ISA IBM 1130 row updated to reflect the final crate state (5 demos in the emulator including the 1054/console hello-world; `-target` ABI anchored on historical conventions). Resolved-vs-open decisions split out: D1/D2/D4/D5 (plan) and D4/D5/D6 (design) are confirmed; D3 (pilot frontend), D6 (phase-4 ISA), and D7 design (conformance crate) remain for the next saga. Saga `foundation-and-1130-bringup` is closed; phase 3 (pilot frontend) and beyond will start as separate sagas. **Saga complete.**
+- 2026-05-10: post-saga planning update. Pilot frontend (D3) resolved toward **FORTH on 1130** rather than BASIC. Historical fit: Charles H. Moore's first FORTH implementation in 1968 ran on a 1130; the source survives at [`monsonite/1968-FORTH`](https://github.com/monsonite/1968-FORTH) (645 lines of 1130 asm + 235-line FORTH dump; 28 primitives + self-extending dictionary; Moore granted permission to publish in May 2020). Local DTC FORTH reference at `~/github/sw-embed/sw-cor24-forth`. New `docs/forth-on-1130-plan.md` captures the 13-step saga skeleton (~5-6 weeks), the assembler features needed to ingest historical 1130 source (BSC long-form mask, literal expressions, BSS/BES/DEC/EBC/DSA/ENT/EXT directives), and 5 open sub-decisions (ITC vs DTC, ASCII vs EBCDIC, primitive set, self-hosting, block I/O). `plan.md` Sec 6 + `decisions.md` Sec 8 updated to point at the new plan. BASIC retained as fallback if a FORTH-saga blocker turns up.
 
 ## Update protocol
 

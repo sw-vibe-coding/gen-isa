@@ -129,18 +129,32 @@ Follow `porting-guide.md`. Expect to push back on `sw-isa-core` and friends as 1
 - IBM 1130 emulator runs the pilot frontend's "hello world".
 - Postmortem in `docs/other-isas/postmortem-ibm1130.md` documenting any abstraction-level adjustments made during bring-up.
 
-## 6. Phase 3 — Pilot frontend refactor
+## 6. Phase 3 — Pilot frontend on the IBM 1130
 
-**Owner:** language maintainer (with assistance). **Duration:** 1–3 weeks (depends on phase 0 category).
+**Owner:** language maintainer (with assistance). **Duration:** 5–6 weeks. **Detailed design:** [`docs/forth-on-1130-plan.md`](forth-on-1130-plan.md).
 
-- **3.1.** Refactor pilot frontend (default: BASIC) to emit `sw-tir` IR.
-- **3.2.** Wire pilot through `sw-tir-opt → sw-ibm1130-codegen → sw-ibm1130-asm → sw-ibm1130-emulator`. Verify pilot tests pass (or have equivalent 1130-targeted versions).
-- **3.3.** Document refactor pattern in `docs/other-isas/frontend-refactor.md`.
+**Pilot frontend choice:** **FORTH**, not BASIC. Three reasons:
+
+- Historical fit: Charles H. Moore implemented the *first* FORTH on an IBM 1130 in 1968. Choosing FORTH on 1130 is recreating the language on its native machine.
+- Original source available: Moore granted permission in 2020 to publish the recovered 1968 source ([`monsonite/1968-FORTH`](https://github.com/monsonite/1968-FORTH); 645 lines of 1130 asm + 235-line FORTH dump; 28 primitives + self-extending dictionary).
+- Local reference: `~/github/sw-embed/sw-cor24-forth` is a 2600-line DTC FORTH for COR24 with three layered crates -- the structure ports cleanly to the 1130 register set.
+
+BASIC remains an alternate; if the FORTH saga uncovers a blocker, BASIC is the fallback (and could ship later as a second pilot).
+
+- **3.-1.** Close known infrastructure gaps before any FORTH-specific work: BSC long-form condition mask in `sw-ibm1130-isa` (postmortem Sec 4); literal expressions and historical directives (BSS/BES/DEC/EBC/DSA/ENT/EXT) in `sw-ibm1130-asm`. See `docs/forth-on-1130-plan.md` Sec 10 for the full extension list.
+- **3.0.** Pull `monsonite/1968-FORTH` as a read-only reference; produce a side-by-side primitive table comparing Moore's 1968 kernel and the COR24 reference.
+- **3.1.** Hand-write the 1130 FORTH kernel in 1130 assembly (28 historical primitives + dictionary structure). Assemble through `sw-ibm1130-asm`; run primitives under `sw-ibm1130-emulator`.
+- **3.2.** Author `sw-ibm1130-forth` Rust crate: parser + tokeniser + compiler that emits TIR `Function`s for user-defined words and threads them via the kernel's NEXT.
+- **3.3.** Wire the pipeline end-to-end: `.fth` source → parser → TIR → `sw-tir-opt` → `sw-ibm1130-codegen` → `sw-ibm1130-asm` → emitted bytes → `sw-ibm1130-emulator` → 1054/console output.
+- **3.4.** Demo: a `.fth` file like `: HI ." HELLO WORLD" CR ; HI BYE` ends with `HELLO WORLD` typed on the captured console buffer.
+- **3.5.** Document refactor pattern in `docs/other-isas/frontend-refactor.md` for use in phase 7.
 
 ### Exit criteria for phase 3
 
-- Pilot frontend produces 1130 binaries that run on the emulator.
-- Refactor pattern documented for use in phase 7.
+- `sw-comp-history/sw-ibm1130-forth` exists and is pushed.
+- A FORTH source file compiles, runs on the emulator, and prints to the captured 1054/console buffer end-to-end.
+- BSC mask gap closed (or explicitly documented as why-deferred-still); historical directives accepted by the assembler so future 1130-flavoured pilot work has a real on-ramp.
+- Refactor pattern documented for use in phase 7 (when other frontends move to TIR).
 
 The COR24 toolchain remains fully functional via the existing direct-emit path. Pilot frontend keeps both paths during transition; COR24 path is removed only after phase 8.
 

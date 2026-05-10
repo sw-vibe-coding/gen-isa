@@ -165,13 +165,37 @@ crates exist, build the conformance crate then.
 
 ## 8. Pilot frontend selection (plan.md D3)
 
-**Status.** Deferred. Out of this saga's scope.
+**Status.** Resolved 2026-05-10 (post-saga). Pilot frontend = **FORTH**.
 
-**Rationale.** This saga ends at "IBM 1130 quintet exists and tests pass".
-No frontend integration yet. Pilot selection happens in a future phase-3
-saga after phase-0 discovery (`plan.md` Sec 3) categorises each compiler.
+**Rationale.** Three points of fit:
 
-**Revisit if.** Phase-0 discovery completes and the saga sequencing changes.
+- Charles H. Moore implemented the *first* FORTH on an IBM 1130 in 1968.
+  Choosing FORTH-on-1130 as the pilot recreates the language on its
+  native machine -- we're not just bringing up A frontend, we're
+  bringing up THE original frontend.
+- Moore's 1968 source survives. Posted at
+  [`monsonite/1968-FORTH`](https://github.com/monsonite/1968-FORTH) with
+  Moore's permission in May 2020: 645 lines of 1130 assembly + a
+  235-line FORTH-level disk dump. 28 primitives + self-extending
+  dictionary. Concrete reference for our kernel.
+- A modern reference exists locally:
+  `~/github/sw-embed/sw-cor24-forth` is a 2600-line DTC FORTH kernel
+  for COR24 with three layered crates (`forth-from-forth`,
+  `forth-in-forth`, `forth-on-forthish`). Structure ports cleanly.
+
+BASIC remains an alternate fallback; if the FORTH saga turns up a
+blocker, BASIC is what we'd retreat to. Both could ship eventually,
+but FORTH goes first.
+
+**Detailed design.** [`docs/forth-on-1130-plan.md`](forth-on-1130-plan.md)
+captures the saga skeleton (13 steps, ~5-6 weeks), assembler-feature
+extensions needed for the historical 1130 source, and the open
+sub-decisions (ITC vs DTC, ASCII vs EBCDIC, primitive set, etc.) that
+the FORTH saga's step 1 resolves.
+
+**Revisit if.** The FORTH saga uncovers a blocker (e.g. the BSC mask
+gap turns out to be deeper than estimated, or the slot-based codegen
+can't carry threaded-code arrays). Fall back to BASIC if that happens.
 
 ---
 
