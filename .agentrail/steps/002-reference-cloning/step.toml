@@ -1,6 +1,6 @@
 number = 2
 slug = "reference-cloning"
-status = "pending"
+status = "in-progress"
 description = "Step 2 of saga 'forth-on-1130' -- read Moore's source and produce a side-by-s..."
 role = "legacy"
 context_files = []

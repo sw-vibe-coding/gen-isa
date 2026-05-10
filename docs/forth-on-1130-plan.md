@@ -245,6 +245,19 @@ survives:
 
 ## 8. References
 
+### Source survey (saga step 2 deliverables)
+
+- [`sw-ibm1130-forth/docs/moore-1968-survey.md`](https://github.com/sw-comp-history/sw-ibm1130-forth/blob/main/docs/moore-1968-survey.md)
+  -- prose findings from reading Moore's kernel + Claunch's
+  notes: threading model, register usage, branching idioms,
+  character-encoding pipeline, definition syntax, code-
+  generation primitive set, asm directives observed.
+- [`sw-ibm1130-forth/docs/moore-1968-primitives.md`](https://github.com/sw-comp-history/sw-ibm1130-forth/blob/main/docs/moore-1968-primitives.md)
+  -- mechanical side-by-side table covering the kernel
+  primitives, the in-FORTH code-generation primitives, the
+  high-level FORTH word set, the directives, the conditional-
+  branch mnemonics, and the shift sub-ops.
+
 ### The historical 1968 source
 
 - [monsonite/1968-FORTH](https://github.com/monsonite/1968-FORTH) --
