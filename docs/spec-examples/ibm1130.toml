@@ -1,16 +1,19 @@
-# IBM 1130 ISA spec sample
+# IBM 1130 ISA spec
 #
-# Demonstrates the spec format for a target ISA. Numeric opcode values
-# follow the sketches in docs/porting-guide.md Sec 3.1 and Sec 8; exact
-# values must be reconciled against IBM 1130 Functional Characteristics
-# (GA26-5881) before the generator emits a production sw-ibm1130-isa.
-# This file exists to validate the spec format covers the 1130, not to
-# be the production source-of-truth.
+# Opcode values are 5-bit (top 5 bits of the first instruction word).
+# Cross-checked against IBM 1130 Functional Characteristics (GA26-5881)
+# via the S1130 emulator's transcribed table; values themselves are
+# factual content from the manual, not code.
 #
 # Encoding style is "bit_fields": the generator emits encode.rs / decode.rs
 # from the [[format.field]] declarations. F-bit format dispatch is via
 # first_word_bits; bit 5 of the first 16-bit word selects short (F=0) or
 # long (F=1) form.
+#
+# Coverage: 24 standard opcodes. Sub-op selection inside SLA/SRA (single
+# vs double, left-or-rotate) is left to the codegen / emulator; the spec
+# captures the top-5-bit opcode only, with the count or sub-op field
+# encoded into the displacement bits per the manual.
 
 [arch]
 display_name = "IBM 1130"
@@ -38,6 +41,11 @@ style = "bit_fields"
 length_dispatch = "first_word_bits"
 
 # ----- Registers -----
+# ACC + EXT are the accumulator and extension; XR1-3 are index registers
+# (memory-mapped at addresses 1..3 in the real machine, but logically
+# addressable as registers via the 2-bit tag field). XR3 is reserved by
+# convention as the future frame pointer (decisions.md Sec 1).
+# IAR is the instruction address register (PC).
 
 [[register]]
 name = "acc"
@@ -61,7 +69,7 @@ index = 3
 
 [[register]]
 name = "xr3"
-class = "fp"                          # reserved as future frame pointer
+class = "fp"
 index = 4
 
 [[register]]
@@ -74,13 +82,13 @@ index = 5
 [[fixed_pair]]
 hi = "acc"
 lo = "ext"
-purpose = "double-precision arithmetic (M, D, LDD, STD)"
+purpose = "double-precision arithmetic (M, D, LDD, STD, AD, SD)"
 
 # ----- Formats -----
 # Short form: 16 bits total
 #   bits  0..4  (5): opcode
 #   bit       5 (1): F = 0 (discriminator)
-#   bits  6..7  (2): tag (XR selector)
+#   bits  6..7  (2): tag (XR selector, 0=no XR, 1=XR1, 2=XR2, 3=XR3)
 #   bits 8..15  (8): displacement (signed)
 #
 # Long form: 32 bits total (two big-endian words)
@@ -173,8 +181,9 @@ kind = "imm"
 offset = 16
 width = 16
 
-# ----- Opcodes (illustrative subset of >=5 opcodes covering both forms) -----
+# ----- Opcodes (24 standard ops; cross-checked against FC manual via S1130) -----
 
+# Memory reference (most have both short and long forms)
 [[opcode]]
 name = "Load"
 mnemonic = "ld"
@@ -186,9 +195,52 @@ role = "mem.load"
 name = "LoadDouble"
 mnemonic = "ldd"
 value = 0x19
-formats = ["long"]                    # double-precision: long form only in this sample
+formats = ["short", "long"]
 role = "mem.load_double"
 
+[[opcode]]
+name = "Store"
+mnemonic = "sto"
+value = 0x1A
+formats = ["short", "long"]
+role = "mem.store"
+
+[[opcode]]
+name = "StoreDouble"
+mnemonic = "std"
+value = 0x1B
+formats = ["short", "long"]
+role = "mem.store_double"
+
+[[opcode]]
+name = "LoadIndex"
+mnemonic = "ldx"
+value = 0x0C
+formats = ["short", "long"]
+role = "mem.load_index"
+
+[[opcode]]
+name = "StoreIndex"
+mnemonic = "stx"
+value = 0x0D
+formats = ["short", "long"]
+role = "mem.store_index"
+
+[[opcode]]
+name = "LoadStatus"
+mnemonic = "lds"
+value = 0x04
+formats = ["short", "long"]
+role = "mem.load_status"
+
+[[opcode]]
+name = "StoreStatus"
+mnemonic = "sts"
+value = 0x05
+formats = ["short", "long"]
+role = "mem.store_status"
+
+# Arithmetic
 [[opcode]]
 name = "Add"
 mnemonic = "a"
@@ -197,22 +249,111 @@ formats = ["short", "long"]
 role = "arith.add"
 
 [[opcode]]
-name = "Store"
-mnemonic = "sto"
-value = 0x05
+name = "AddDouble"
+mnemonic = "ad"
+value = 0x11
 formats = ["short", "long"]
-role = "mem.store"
+role = "arith.add_double"
+
+[[opcode]]
+name = "Subtract"
+mnemonic = "s"
+value = 0x12
+formats = ["short", "long"]
+role = "arith.sub"
+
+[[opcode]]
+name = "SubtractDouble"
+mnemonic = "sd"
+value = 0x13
+formats = ["short", "long"]
+role = "arith.sub_double"
 
 [[opcode]]
 name = "Multiply"
 mnemonic = "m"
 value = 0x14
 formats = ["short", "long"]
-role = "arith.mul.pair"               # produces 32-bit result in ACC+EXT
+role = "arith.mul.pair"          # ACC * M -> ACC,EXT
 
+[[opcode]]
+name = "Divide"
+mnemonic = "d"
+value = 0x15
+formats = ["short", "long"]
+role = "arith.div.pair"          # ACC,EXT / M -> ACC; remainder in EXT
+
+# Logical
+[[opcode]]
+name = "And"
+mnemonic = "and"
+value = 0x1C
+formats = ["short", "long"]
+role = "bitwise.and"
+
+[[opcode]]
+name = "Or"
+mnemonic = "or"
+value = 0x1D
+formats = ["short", "long"]
+role = "bitwise.or"
+
+[[opcode]]
+name = "ExclusiveOr"
+mnemonic = "eor"
+value = 0x1E
+formats = ["short", "long"]
+role = "bitwise.xor"
+
+# Shift (special: count and sub-op are encoded in the low bits per FC manual;
+# the spec captures the top-5 opcode only; codegen / asm / emulator decode the
+# count and sub-op (SLA/SLT/SLCA/SLC) from the displacement field).
+[[opcode]]
+name = "ShiftLeft"
+mnemonic = "sla"
+value = 0x02
+formats = ["short"]
+role = "bitwise.shift_left"
+
+[[opcode]]
+name = "ShiftRight"
+mnemonic = "sra"
+value = 0x03
+formats = ["short"]
+role = "bitwise.shift_right"
+
+# Branch / control
 [[opcode]]
 name = "BranchSkipCondition"
 mnemonic = "bsc"
 value = 0x09
 formats = ["short", "long"]
 role = "branch.cond"
+
+[[opcode]]
+name = "BranchStore"
+mnemonic = "bsi"
+value = 0x08
+formats = ["short", "long"]
+role = "branch.call"             # Branch and Store IAR (subroutine call)
+
+[[opcode]]
+name = "ModifyIndex"
+mnemonic = "mdx"
+value = 0x0E
+formats = ["short", "long"]
+role = "branch.modify_index"
+
+[[opcode]]
+name = "Wait"
+mnemonic = "wait"
+value = 0x06
+formats = ["short"]
+role = "control.wait"
+
+[[opcode]]
+name = "ExecuteInputOutput"
+mnemonic = "xio"
+value = 0x01
+formats = ["long"]               # XIO requires the address operand
+role = "control.io"
