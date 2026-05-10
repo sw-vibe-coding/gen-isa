@@ -1,6 +1,6 @@
 number = 13
 slug = "status-update"
-status = "pending"
+status = "in-progress"
 description = """
 Step 13 of saga 'foundation-and-1130-bringup' -- final saga step.
 

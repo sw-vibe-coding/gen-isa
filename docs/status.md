@@ -1,10 +1,10 @@
 # Status: Multi-ISA Toolchain Bring-up
 
-> Status: exploratory draft, not git-tracked. Created 2026-05-08. Update as work progresses.
+> Status: live document, git-tracked. Created 2026-05-08. Update as work progresses.
 
 ## Last updated
 
-2026-05-10 — saga step 12 (`postmortem`) complete. `docs/postmortem-1130-bringup.md` captures the trait-surface story (no framework changes, deceptively-clean), ABI revision lessons, BSC mask gap, slot-codegen-with-no-allocator debt, asm syntax decisions, emulator scope boundaries, and 8 lessons for ISA #2.
+2026-05-10 — saga `foundation-and-1130-bringup` complete. Phase 1 (layered scaffolding) and phase 2 (first new ISA = IBM 1130) both delivered: 5 framework crates in `sw-langtools` and 5 per-ISA crates in `sw-comp-history`, with the emulator running 5 curated programs end-to-end (math, conditions, loops, strings, hello-world via 1054 console). Postmortem at `docs/postmortem-1130-bringup.md`. Phase 3 (pilot frontend) and beyond start in separate sagas.
 
 ## Phase summary
 
@@ -13,8 +13,8 @@ Phases per `plan.md` (resequenced 2026-05-08).
 | Phase | Description                                              | State          |
 | ----- | -------------------------------------------------------- | -------------- |
 | 0     | Discovery: audit existing compilers' backend shape       | not started    |
-| 1     | Layered scaffolding (minimal, co-developed with phase 2) | **skeletons up** (saga step 3 of 13 complete; trait surfaces will iterate during 1130 bring-up) |
-| 2     | First new ISA (IBM 1130 recommended)                     | not started    |
+| 1     | Layered scaffolding (minimal, co-developed with phase 2) | **complete** (5 framework crates in `sw-langtools` org; trait surface unchanged through 1130 bring-up -- see postmortem Sec 2) |
+| 2     | First new ISA (IBM 1130 recommended)                     | **complete** (5 per-ISA crates in `sw-comp-history`; emulator runs 5 curated demos to halt; postmortem in `docs/postmortem-1130-bringup.md`) |
 | 3     | Pilot frontend refactor (BASIC suggested) on phase-2 ISA | not started    |
 | 4     | Second new ISA (CDP1802 or RISC-V I32)                   | not started    |
 | 5     | Third new ISA (the other of CDP1802 / RISC-V I32)        | not started    |
@@ -39,7 +39,7 @@ Phases per `plan.md` (resequenced 2026-05-08).
 | ISA       | `-isa`                | `-target` | `-codegen` | `-asm`            | `-emulator`      |
 | --------- | --------------------- | --------- | ---------- | ----------------- | ---------------- |
 | COR24     | **exists** (this repo, not yet `Architecture`-impl'd) | no | no | exists (separate) | exists (separate) |
-| IBM 1130  | **exists** (`sw-comp-history/sw-ibm1130-isa`, 24 opcodes, 12 tests passing) | **exists** (`sw-comp-history/sw-ibm1130-target`, ABI revised to historical conventions, 15 tests) | **exists** (`sw-comp-history/sw-ibm1130-codegen`, hand-written lowering, 9 tests) | **exists** (`sw-comp-history/sw-ibm1130-asm`, two-pass assembler, 28 tests) | **exists** (`sw-comp-history/sw-ibm1130-emulator`, 13 unit + 4 demo programs) |
+| IBM 1130  | **exists** (`sw-comp-history/sw-ibm1130-isa`, 24 opcodes, 12 tests passing) | **exists** (`sw-comp-history/sw-ibm1130-target`, ABI anchored on historical 1130 conventions per `docs/abi-linkage.md`, 15 tests) | **exists** (`sw-comp-history/sw-ibm1130-codegen`, hand-written lowering, 9 tests) | **exists** (`sw-comp-history/sw-ibm1130-asm`, two-pass assembler, 28 tests) | **exists** (`sw-comp-history/sw-ibm1130-emulator`, 14 unit + 5 demo programs incl. 1054/console hello-world) |
 | CDP1802   | no                    | no        | no         | no                | no               |
 | RISC-V I32| no                    | no        | no         | no                | no               |
 | S/370     | no                    | no        | no         | no                | no               |
@@ -107,23 +107,40 @@ Categories from `plan.md §3`:
 `◐` = partial (codegen exists but emulator/runtime missing, or vice versa).
 `✗` = nothing wired up yet.
 
-## Open decisions waiting on user
+## Decisions resolved during the saga
 
 From `plan.md §14`:
 
-- **D1.** Workspace vs sibling repos for `sw-isa-core`, `sw-target-core`, `sw-tir`, `sw-codegen-core`?
-- **D2.** Confirm SSA-with-block-params IR shape?
-- **D3.** Pilot frontend (default suggestion: BASIC)?
-- **D4.** Any existing IR-shaped tools in the ecosystem to reuse?
-- **D5.** Crate naming prefix?
-- **D6.** Phase 4 = CDP1802 or RISC-V I32 first? (Recommendation: CDP1802; user may prefer RISC-V for speed.)
+- **D1 (resolved).** Sibling repos chosen (one repo per crate under the
+  appropriate org); `sw-langtools` for framework crates,
+  `sw-comp-history` for per-ISA crates.
+- **D2 (resolved).** SSA-with-block-params confirmed in `sw-tir`.
+- **D4 (resolved).** No existing IR-shaped tool in the ecosystem to
+  reuse; `sw-tir` is greenfield.
+- **D5 (resolved).** Crate prefix is `sw-` for all framework and per-
+  ISA crates.
 
 From `design.md §11`:
 
-- **D4 (design).** Distinct address types per ISA (proposed: yes)?
-- **D5 (design).** Custom allocator on IBM 1130 (proposed: defer)?
-- **D6 (design).** ABI documentation format (proposed: markdown)?
-- **D7 (design).** Workspace conformance crate (proposed: yes, post-second-ISA)?
+- **D4 design (resolved).** Distinct address types per ISA implemented
+  (e.g. `sw_ibm1130_isa::Addr` for the 1130).
+- **D5 design (resolved).** No custom allocator on the 1130 (deferred);
+  current codegen ships with a slot-based no-allocator model -- see
+  postmortem Sec 5.
+- **D6 design (resolved).** ABI doc format is markdown (`docs/abi.md`
+  per per-ISA `-target` crate).
+
+## Open decisions for the next saga
+
+- **D3 (still open).** Pilot frontend selection. Default suggestion is
+  BASIC; depends on phase 3 saga.
+- **D6 (still open).** Phase-4 ISA: CDP1802 or RISC-V I32 first?
+  Recommendation in `decisions.md`: CDP1802 (highest framework-stress
+  per cost). User may prefer RISC-V for cycle speed and simpler tests.
+- **D7 design (still open).** Workspace conformance crate to assert
+  `Architecture` / `Target` invariants across all per-ISA crates.
+  Recommended: defer until ISA #2 lands so the conformance shape is
+  driven by two ISAs, not one.
 
 ## Recent changes
 
@@ -148,6 +165,7 @@ From `design.md §11`:
 - 2026-05-10: completed step `ibm1130-emulator`. [`sw-comp-history/sw-ibm1130-emulator`](https://github.com/sw-comp-history/sw-ibm1130-emulator). Minimal CPU state (ACC/EXT/XR1/XR2/XR3/IAR + carry/overflow), word-addressed `Memory`, and `step()`/`run()` executor implementing the 24-opcode subset. BSC mask semantics pinned: short form tests mask byte and skips next instr if any condition matches; long form is unconditional in this emulator (postmortem note: 1130 long form historically encoded a mask in the first-word reserved bits, which our ISA spec set to reserved-zero). 13 instruction-semantics unit tests + 4 curated demo programs in `tests/programs/` (math = (5+3)*4, conditions = max(A,B), loops = sum 1..10, strings = word-copy with sentinel). Each demo doubles as an integration test: assemble -> load -> run-to-halt -> assert memory+register state. cargo build/test/clippy -D warnings/fmt --check all clean. Two parser fixes pushed to sw-ibm1130-asm during the step: BSC L is unconditional (not parsing mask in long form), and `I`/`L` flag tokens require a following token to disambiguate from labels named `I`/`L`. Character-encoding design (EBCDIC vs ASCII vs Hollerith / per-device) deferred to a future saga; intent captured in `docs/character-encoding-plan.md`.
 - 2026-05-10: post-step-11 polish (off-saga, on the emulator repo). Added `tests/programs/hello.asm` -- a real hello-world that XIOs each ASCII byte to the 1054/console Selectric area and a captured `console_output` buffer. Extended emulator's `XIO` from no-op to a minimal IOCC-aware handler (area=1 CONSOLE, function=0 WRITE supported; everything else still no-op). Promoted demo programs to per-example runners (`cargo run --example {hello-world,math,conditions,loops,strings}`) with shared scaffolding in `examples/_common.rs`. Each runner prints source, hex dump, post-run memory, and per-demo result. Math demo updated `STO` -> `STD` so the multiply pair actually lands in memory (RESULT, RESULT+1) rather than just storing the high half.
 - 2026-05-10: completed step `postmortem`. New `docs/postmortem-1130-bringup.md` captures the saga's lessons: trait-surfaces in `sw-langtools` did not change during 1130 bring-up but that's deceptive (limited disruption profile, several punted features); the step-8 invented ABI was wrong on XR3 (reserved as LIBF base, not a frame pointer) -- lesson: cross-check against historical listings before pouring downstream layers; the BSC long-form mask field is in the spec's reserved area and needs a re-spec for ISA-side fidelity; codegen ships with a slot-based register-allocator-free model that's a debt the next saga must clear; asm syntax pinned colon-suffixed labels and lookahead-based I/L flag parsing; emulator scope is deliberately narrow (no real device subsystem, no interrupts, no timing). Includes 8 concrete lessons for ISA #2 and a future-work catalogue.
+- 2026-05-10: completed step `status-update` (final saga step). Phase summary marked phase 1 + phase 2 complete; per-ISA IBM 1130 row updated to reflect the final crate state (5 demos in the emulator including the 1054/console hello-world; `-target` ABI anchored on historical conventions). Resolved-vs-open decisions split out: D1/D2/D4/D5 (plan) and D4/D5/D6 (design) are confirmed; D3 (pilot frontend), D6 (phase-4 ISA), and D7 design (conformance crate) remain for the next saga. Saga `foundation-and-1130-bringup` is closed; phase 3 (pilot frontend) and beyond will start as separate sagas. **Saga complete.**
 
 ## Update protocol
 
