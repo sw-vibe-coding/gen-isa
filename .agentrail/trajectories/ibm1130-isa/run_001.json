@@ -1,0 +1,11 @@
+{
+  "task_type": "ibm1130-isa",
+  "state": {
+    "number": 7,
+    "step": "ibm1130-isa"
+  },
+  "action": "Read S1130 OpCodes.cs (read-only, values not code) and ibm-1130-rs/instruction.rs for AddressingMode/BranchCondition. Authored expanded ibm1130.toml. Iterated on generator: ran scaffolder, ran cargo clippy on output, fixed shift-elision and paren issues in src/emit.rs, regenerated; repeated until clippy clean. Hand-fixed wrong reference vector (mental-math error: thought 0xC4 was tag=2 short; actually 0xC4 has F=1 = long form). Hand-fixed lib.rs to declare addr_mode + branch_cond modules and re-export. Moved tempdir crate to sw-comp-history/sw-ibm1130-isa; gh repo create --public --source --push.",
+  "result": "success",
+  "reward": 1,
+  "timestamp": "2026-05-09T17:35:48"
+}
