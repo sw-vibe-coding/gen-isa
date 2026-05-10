@@ -1,0 +1,1 @@
+Scaffolded sw-ibm1130-target into sw-comp-history; hand-authored invented ABI in docs/abi.md (ACC=arg+ret, ACC+EXT 32-bit pair, XR1 caller-saved scratch, XR2=SP callee-saved, XR3=FP callee-saved, word-aligned, ptr=16 bits). Implemented Target / CallingConvention / RegisterClasses; 13 smoke tests pass; cargo build/test/clippy -D warnings/fmt all clean.

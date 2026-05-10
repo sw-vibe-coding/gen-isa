@@ -1,6 +1,6 @@
 number = 8
 slug = "ibm1130-target"
-status = "in-progress"
+status = "completed"
 description = """
 Step 8 of saga "foundation-and-1130-bringup".
 
@@ -10,5 +10,6 @@ Bring up `sw-comp-hist..."""
 role = "legacy"
 context_files = []
 created_at = "2026-05-09T17:35:48"
+completed_at = "2026-05-09T17:45:15"
 task_type = "ibm1130-target"
-commits = []
+commits = ["8838b5e4f640887620ee15ae46808552f4411bce"]

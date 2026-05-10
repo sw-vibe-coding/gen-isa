@@ -1,0 +1,13 @@
+number = 9
+slug = "ibm1130-codegen"
+status = "pending"
+description = """
+Step 9 of saga "foundation-and-1130-bringup".
+
+# Goal
+
+Bring up sw-comp-histo..."""
+role = "legacy"
+context_files = []
+created_at = "2026-05-09T17:45:15"
+commits = []

@@ -1,0 +1,11 @@
+{
+  "task_type": "ibm1130-target",
+  "state": {
+    "number": 8,
+    "step": "ibm1130-target"
+  },
+  "action": "ran gen-isa scaffold --spec into a tempdir, kept only the -target subdir, copied to ~/github/sw-comp-history/sw-ibm1130-target, hand-wrote docs/abi.md (11 sections), src/lib.rs (Target impl), src/abi.rs (CallingConvention), src/classes.rs (RegisterClasses), src/types.rs (type_width / type_alignment), tests/smoke.rs (13 unit tests covering register partitioning + ABI table), git init + first commit + gh repo create --public --source=. --push, updated gen-isa docs/status.md, single-commit on this repo.",
+  "result": "success",
+  "reward": 1,
+  "timestamp": "2026-05-09T17:45:15"
+}
