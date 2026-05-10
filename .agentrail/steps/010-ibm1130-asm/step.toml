@@ -1,6 +1,6 @@
 number = 10
 slug = "ibm1130-asm"
-status = "in-progress"
+status = "completed"
 description = """
 Step 10 of saga "foundation-and-1130-bringup".
 
@@ -10,4 +10,5 @@ Bring up sw-comp-hist..."""
 role = "legacy"
 context_files = []
 created_at = "2026-05-09T18:12:01"
-commits = []
+completed_at = "2026-05-09T18:40:29"
+commits = ["1e34a8f5c111e3bf74fe17114ef1dbc7ef790ac6"]
