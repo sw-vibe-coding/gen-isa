@@ -219,8 +219,13 @@ FORTH source.
 
 ## 7. Open questions for the saga's decisions step
 
-These get resolved at saga step 1, but listing here so the future
-session knows what to settle:
+> **Resolved 2026-05-10 in saga step 1.** See
+> [`forth-on-1130-decisions.md`](forth-on-1130-decisions.md) for
+> the locked outcomes. The questions below are kept for context;
+> the linked doc is the authoritative answer.
+
+These got resolved at saga step 1; listed here so the context
+survives:
 
 - **Q1.** ITC vs DTC vs subroutine-threaded? Recommended: ITC for
   historical fidelity, plus a DTC fallback experiment if ITC's

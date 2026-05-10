@@ -1,6 +1,6 @@
 number = 1
 slug = "decisions"
-status = "pending"
+status = "in-progress"
 description = """
 Step 1 of saga 'forth-on-1130' -- decisions (docs only).
 
