@@ -1,6 +1,6 @@
 number = 11
 slug = "ibm1130-emulator"
-status = "pending"
+status = "in-progress"
 description = """
 Step 11 of saga "foundation-and-1130-bringup".
 
