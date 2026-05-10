@@ -1,6 +1,6 @@
 number = 9
 slug = "ibm1130-codegen"
-status = "in-progress"
+status = "completed"
 description = """
 Step 9 of saga "foundation-and-1130-bringup".
 
@@ -10,4 +10,5 @@ Bring up sw-comp-histo..."""
 role = "legacy"
 context_files = []
 created_at = "2026-05-09T17:45:15"
-commits = []
+completed_at = "2026-05-09T18:12:01"
+commits = ["82e0fd3be21aec59f6f07b80374f77fe7ab7add3"]
