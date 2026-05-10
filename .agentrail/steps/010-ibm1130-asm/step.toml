@@ -1,6 +1,6 @@
 number = 10
 slug = "ibm1130-asm"
-status = "pending"
+status = "in-progress"
 description = """
 Step 10 of saga "foundation-and-1130-bringup".
 
