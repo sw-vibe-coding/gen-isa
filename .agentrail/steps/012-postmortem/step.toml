@@ -1,0 +1,13 @@
+number = 12
+slug = "postmortem"
+status = "pending"
+description = """
+Step 12 of saga "foundation-and-1130-bringup".
+
+# Goal
+
+Write gen-isa/docs/po..."""
+role = "legacy"
+context_files = []
+created_at = "2026-05-10T11:30:38"
+commits = []
