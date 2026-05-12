@@ -1,6 +1,6 @@
 number = 3
 slug = "bsc-mask-fix"
-status = "pending"
+status = "in-progress"
 description = "Step 3 of saga 'forth-on-1130' -- close the BSC long-form condition-mask gap...."
 role = "legacy"
 context_files = []

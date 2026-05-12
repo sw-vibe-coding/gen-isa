@@ -96,7 +96,18 @@ purpose = "double-precision arithmetic (M, D, LDD, STD, AD, SD)"
 #   bit       5 (1): F = 1 (discriminator)
 #   bits  6..7  (2): tag
 #   bit       8 (1): indirect
-#   bits  9..15 (7): reserved (must be 0)
+#   bits  9..15 (7): mask -- BSC/BSI condition mask byte. Per Moore's
+#                    1968 FORTH listing's :POSITIVE/:NEGATIVE/:EQUAL/
+#                    :EVEN constants, the bit assignments are:
+#                      0x04 = Even (E)
+#                      0x08 = Positive (+)
+#                      0x10 = Negative (-)
+#                      0x20 = Zero (Z)
+#                      0x40 = Carry (C)
+#                      (bit 0x01, 0x02 unused; 0x80 reserved)
+#                    For non-BSC/BSI long-form ops the asm/codegen
+#                    enforce mask = 0 (the historical "must be zero"
+#                    constraint becomes a per-mnemonic policy).
 #   bits 16..31 (16): address
 
 [[format]]
@@ -169,11 +180,10 @@ offset = 8
 width = 1
 
 [[format.field]]
-name = "reserved"
-kind = "reserved"
+name = "mask"
+kind = "imm"
 offset = 9
 width = 7
-value = 0
 
 [[format.field]]
 name = "address"
