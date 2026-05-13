@@ -1,0 +1,8 @@
+number = 4
+slug = "asm-extensions"
+status = "pending"
+description = "Step 4 of saga 'forth-on-1130' -- asm extensions for ingesting Moore's 1968 s..."
+role = "legacy"
+context_files = []
+created_at = "2026-05-12T17:02:05"
+commits = []

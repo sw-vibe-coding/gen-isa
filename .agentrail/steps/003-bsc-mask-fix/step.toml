@@ -1,8 +1,9 @@
 number = 3
 slug = "bsc-mask-fix"
-status = "in-progress"
+status = "completed"
 description = "Step 3 of saga 'forth-on-1130' -- close the BSC long-form condition-mask gap...."
 role = "legacy"
 context_files = []
 created_at = "2026-05-10T13:38:50"
-commits = []
+completed_at = "2026-05-12T17:02:05"
+commits = ["28d912fc8333276e6cf88dc8fa4070cf48a185a3"]
