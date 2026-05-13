@@ -1,0 +1,1 @@
+Saga step 4 complete. sw-ibm1130-asm extended with the directives, literal forms, operand expressions, mnemonic aliases, and comment-line patterns that the 1968 IBM 1130 Assembler Language uses. Test count 28 -> 46. Existing round-trips preserved.

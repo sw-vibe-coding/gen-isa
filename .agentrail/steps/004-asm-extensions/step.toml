@@ -1,8 +1,9 @@
 number = 4
 slug = "asm-extensions"
-status = "pending"
+status = "completed"
 description = "Step 4 of saga 'forth-on-1130' -- asm extensions for ingesting Moore's 1968 s..."
 role = "legacy"
 context_files = []
 created_at = "2026-05-12T17:02:05"
-commits = []
+completed_at = "2026-05-12T17:46:03"
+commits = ["566783785477f20a91835dc27dd3ef99ee2903f7"]
