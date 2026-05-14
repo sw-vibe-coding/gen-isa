@@ -1,8 +1,9 @@
 number = 5
 slug = "kernel-translation"
-status = "pending"
+status = "completed"
 description = "Step 5 of saga 'forth-on-1130' -- translate Moore's 1968 kernel into our asm ..."
 role = "legacy"
 context_files = []
 created_at = "2026-05-12T17:46:03"
-commits = []
+completed_at = "2026-05-14T12:29:50"
+commits = ["fd15ee5fa145351b5af2492c7dff0fbbc79b6933"]
