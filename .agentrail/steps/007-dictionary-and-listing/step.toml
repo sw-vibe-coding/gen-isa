@@ -1,0 +1,8 @@
+number = 7
+slug = "dictionary-and-listing"
+status = "pending"
+description = "Step 7 of saga 'forth-on-1130' -- fill in the stubbed dictionary and translat..."
+role = "legacy"
+context_files = []
+created_at = "2026-05-14T18:38:05"
+commits = []
