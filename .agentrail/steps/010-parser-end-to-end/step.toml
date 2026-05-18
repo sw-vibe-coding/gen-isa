@@ -1,0 +1,8 @@
+number = 10
+slug = "parser-end-to-end"
+status = "pending"
+description = "Step 10 of saga 'forth-on-1130' -- get the kernel to actually match an inject..."
+role = "legacy"
+context_files = []
+created_at = "2026-05-18T13:21:05"
+commits = []
