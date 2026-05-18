@@ -1,0 +1,11 @@
+number = 8
+slug = "input-injection"
+status = "pending"
+description = """
+Step 8 of saga 'forth-on-1130' -- make the kernel actually parse something.
+
+..."""
+role = "legacy"
+context_files = []
+created_at = "2026-05-18T04:51:09"
+commits = []

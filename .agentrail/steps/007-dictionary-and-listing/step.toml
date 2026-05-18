@@ -1,8 +1,9 @@
 number = 7
 slug = "dictionary-and-listing"
-status = "pending"
+status = "completed"
 description = "Step 7 of saga 'forth-on-1130' -- fill in the stubbed dictionary and translat..."
 role = "legacy"
 context_files = []
 created_at = "2026-05-14T18:38:05"
-commits = []
+completed_at = "2026-05-18T04:51:09"
+commits = ["d930c6399d097c40d17d8785b37ee495dc1e8f32"]
