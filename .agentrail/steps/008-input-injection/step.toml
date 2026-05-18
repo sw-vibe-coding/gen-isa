@@ -1,6 +1,6 @@
 number = 8
 slug = "input-injection"
-status = "pending"
+status = "completed"
 description = """
 Step 8 of saga 'forth-on-1130' -- make the kernel actually parse something.
 
@@ -8,4 +8,5 @@ Step 8 of saga 'forth-on-1130' -- make the kernel actually parse something.
 role = "legacy"
 context_files = []
 created_at = "2026-05-18T04:51:09"
-commits = []
+completed_at = "2026-05-18T06:49:26"
+commits = ["c1caafd79421d7e3daa050b1e23fb339fcefa6f2"]

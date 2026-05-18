@@ -1,0 +1,8 @@
+number = 9
+slug = "byte-address-arithmetic"
+status = "pending"
+description = "Step 9 of saga 'forth-on-1130' -- restore the factor-of-2 byte-address arithm..."
+role = "legacy"
+context_files = []
+created_at = "2026-05-18T06:49:26"
+commits = []
